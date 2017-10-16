@@ -18,7 +18,7 @@ import org.json.JSONObject;
 public class YLJumpUtils {
 
     /**
-     * 跳转市民卡支付
+     * 跳转支付
      * @param activity Activity
      * @param order SmkOrder
      * @return 是否原生app支付
@@ -30,13 +30,13 @@ public class YLJumpUtils {
     }
 
     /**
-     * 跳转市民卡支付
+     * 跳转支付
      * @param activity Activity
      * @param orderString 订单字符串
      * @return 是否原生app支付
      */
     public static boolean jumpToSmkPay(Activity activity, String orderString) {
-        if (!YLCommonUtils.checkHasInstallApp(activity, "com.smk")) { // 没有安装杭州市民卡，跳转html
+        if (!YLCommonUtils.checkHasInstallApp(activity, "com.example.app")) { 
             Intent intentDetail = new Intent(activity, YLBWebViewActivity.class);
             intentDetail.putExtra(YLBSdkConstants.EXTRA_H5_URL, YLBSdkManager.isDebugMode() ? YLBSdkConstants.SMKPAY_URL_DEBUG : YLBSdkConstants.SMKPAY_URL_RELEASE);
             intentDetail.putExtra(YLBSdkConstants.EXTRA_ORDER_STRING, orderString);
@@ -96,27 +96,4 @@ public class YLJumpUtils {
         }
         return false;
     }
-
-    // 市民卡预付卡充值
-    public static void h5SkipCardRechargeWithMsg(Context context, String url, String idNo, String channel, String cardNum) {
-        try {
-            JSONObject object = new JSONObject();
-            object.put("idNo", idNo);
-            object.put("channel", channel);
-            object.put("cardNum", cardNum);
-            h5SkipCardRecharge(context, url, object.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // 市民卡预付卡充值
-    public static void h5SkipCardRecharge(Context context, String url, String initParams) {
-        Intent intent = new Intent(context, YLBWebViewActivity.class);
-        intent.putExtra(YLBSdkConstants.EXTRA_H5_URL, url);
-        intent.putExtra(YLBSdkConstants.EXTRA_INIT_PARAMS, initParams);
-        if (!(context instanceof Activity)) intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
-    }
-
 }
