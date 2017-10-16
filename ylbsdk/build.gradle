@@ -1,0 +1,39 @@
+apply plugin: 'com.android.library'
+
+ext.sdkVersionCode = 1
+ext.sdkVersionName = "1.0.0"
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode sdkVersionCode
+        versionName sdkVersionName
+
+        ndk{abiFilters "armeabi"}
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+//    libraryVariants.all { variant ->
+//        variant.outputs.each { output ->
+//            output.outputFile = new File(
+//                    output.outputFile.parent,
+//                    ("YLB_SDK_v${sdkVersionName}_" + buildTime() + ".aar").toLowerCase())
+//        }
+//    }
+}
+
+static def buildTime() {
+    return new Date().format("yyyyMMdd_HHmmss")
+}
+
+dependencies {
+    provided fileTree(include: ['*.jar'], dir: 'libs')
+}

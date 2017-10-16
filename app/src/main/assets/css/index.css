@@ -1,0 +1,10 @@
+.buttonSize{
+	padding: 3px;
+	min-height: 20px;
+	min-width: 40px;
+	margin: 20px;
+}
+div{
+	padding: 3px;
+	margin: 20px;
+}

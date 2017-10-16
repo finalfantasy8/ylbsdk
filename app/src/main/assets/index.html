@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title>SDK测试</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/index.css" />
+		<script src="js/zepto_1.1.3.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/base64.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/SDK.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<button class="btn center-block btn-primary buttonSize pay">pay</button>
+		<div class="payResult">
+			pay:
+		</div>
+		<button class="btn center-block btn-primary buttonSize login">login</button>
+		<div class="loginResult">
+			login:
+		</div>
+		<button class="btn center-block btn-primary buttonSize toast">toast</button>
+		<div class="toastResult">
+			toast:
+		</div>
+		<button class="btn center-block btn-primary buttonSize dialog">dialog</button>
+		<div class="dialogResult">
+			dialog:
+		</div>
+		<button class="btn center-block btn-primary buttonSize function">function</button>
+		<div class="functionResult">
+			function:
+		</div>
+		<button class="btn center-block btn-primary buttonSize getparam">getparam</button>
+		<div class="getparamresult">
+			getparam:
+		</div>
+		<button class="btn center-block btn-primary buttonSize setparam">setparam</button>
+		<button class="btn center-block btn-primary buttonSize finish">finish</button>
+	</body>
+	<script type="text/javascript">
+		function toStr(arr) {
+			var str = "";
+			for(var i = 0; i < arr.length; i++) {
+				var num = arr[i];
+				str += String.fromCharCode(num);
+			}
+			return str
+		}
+		smk.init({
+			appid: 11111,
+			appname: "yu"
+		})
+		$(".pay").click(function() {
+			smk.toPay({
+				"orderNo": "111111",
+				"dateTime": "222222",
+				"amount": "333333",
+				"cardnumber": "444444",
+				"goods": "555555",
+				"merCode": "777777",
+				"mersign": "777777",
+				"mertxtypeid": "777777",
+				"storeid": "777777"
+			})
+		})
+		$(".login").click(function() {
+			//smk.toLogin({
+			//	phoneNo: "11111111",
+			//	userName: "yu"
+			//})
+			ready(function() {
+				YLJsBridge.call(
+					'login',
+					{
+						phoneNo: '1234556777',
+						username: 'uyuakf'
+					},
+					function(result) {
+						$(".loginResult").html("loginResult:" + JSON.stringify(result));
+					}
+				);
+			})
+		})
+		$(".toast").click(function() {
+			smk.toToast({
+				msg: "成功",
+				type: 1
+			})
+		})
+		$(".dialog").click(function() {
+			//smk.toDialog({
+			//	title: "标题",
+			//	msg: "这是信息这是信息这是信息",
+			//	confirm: "是 按钮",
+			//	cancel: "否 按钮",
+			//	type: 2
+			//})
+			ready(function() {
+				YLJsBridge.call('confirm', {
+				  title: '亲',
+				  message: '确定要退出吗？',
+				  okButton: '是',
+				  cancelButton: '否'
+				}, function(result){
+					if(result.ok) {$(".dialogResult").html("dialogResult" + JSON.stringify(result));}
+				});
+			})
+		})
+		$(".function").click(function() {
+			smk.toFunction({
+				msg: "匿名函数",
+				type: "3"
+			},
+			function(result) {
+				$(".functionResult").html("functionResult" + result);
+				$(".functionResult").html($(".functionResult").html() + "<br/> function:" + toStr(BASE64.decoder(result)));
+			})
+		})
+		$(".finish").click(function() {
+			smk.toFinish({
+				msg: "1111111111",
+				type: 1
+			})
+		})
+		$(".setparam").click(function() {
+			smk.toSetparam("setparam")
+		})
+		$(".getparam").click(function() {
+			smk.toGetparam(
+			function(result) {
+				$(".getparamresult").html("getparamresult" + result);
+				$(".getparamresult").html($(".getparamresult").html() + "<br/> getparamresult:" + toStr(BASE64.decoder(result)));
+			})
+		})
+		function ready(callback) {
+            if (window.YLJsBridge) {
+                callback && callback();
+            } else {
+                document.addEventListener(
+                    'YLJsBridgeReady',
+                    callback,
+                    false
+                );
+            }
+        }
+
+		ready(function() {
+            YLJsBridge.call(
+                'toast',
+                {
+                	msg: '中文测试',
+                	type: 1,
+                	duration: 3000
+                },
+                function(responseData) {
+                    $(".toastResult").html("toastResult:" + responseData);
+				}
+            );
+		})
+
+		ready(function() {
+            YLJsBridge.init(function(message, responseCallback) {
+                console.log('JS got a message', message);
+                var data = {
+                    'Javascript Responds': '测试中文!'
+                };
+                console.log('JS responding with', data);
+                responseCallback(data);
+            });
+
+            YLJsBridge.registerHandler("functionInJs", function(data, responseCallback) {
+                document.getElementById("show").innerHTML = ("data from Java: = " + data);
+                var responseData = "Javascript Says Right back aka!";
+                responseCallback(responseData);
+            });
+        })
+	</script>
+
+</html>
