@@ -18,42 +18,6 @@ import org.json.JSONObject;
 public class YLJumpUtils {
 
     /**
-     * 跳转支付
-     * @param activity Activity
-     * @param order SmkOrder
-     * @return 是否原生app支付
-     */
-    public static boolean jumpToSmkPay(Activity activity, SmkOrder order) {
-        Gson gson = new Gson();
-        String orderString = gson.toJson(order);
-        return jumpToSmkPay(activity, orderString);
-    }
-
-    /**
-     * 跳转支付
-     * @param activity Activity
-     * @param orderString 订单字符串
-     * @return 是否原生app支付
-     */
-    public static boolean jumpToSmkPay(Activity activity, String orderString) {
-        if (!YLCommonUtils.checkHasInstallApp(activity, "com.example.app")) { 
-            Intent intentDetail = new Intent(activity, YLBWebViewActivity.class);
-            intentDetail.putExtra(YLBSdkConstants.EXTRA_H5_URL, YLBSdkManager.isDebugMode() ? YLBSdkConstants.SMKPAY_URL_DEBUG : YLBSdkConstants.SMKPAY_URL_RELEASE);
-            intentDetail.putExtra(YLBSdkConstants.EXTRA_ORDER_STRING, orderString);
-            activity.startActivity(intentDetail);
-            return false;
-        } else { // 跳转市民卡app
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_VIEW);
-            intent.setType("smkpay/");
-            intent.putExtra("packageName", activity.getApplicationContext().getPackageName());
-            intent.putExtra("order", orderString);
-            activity.startActivityForResult(intent, YLBSdkConstants.SMKPAY_REQUEST_CODE);
-            return true;
-        }
-    }
-
-    /**
      * 跳转app内支付
      * @param activity YLBWebViewActivity
      * @param param 预传参数
