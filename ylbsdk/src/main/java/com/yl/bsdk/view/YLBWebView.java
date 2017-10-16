@@ -196,21 +196,6 @@ public class YLBWebView extends WebView implements WebViewJavascriptBridge {
                 } else if (url.startsWith(BridgeUtil.YL_OVERRIDE_SCHEMA)) {
                     flushMessageQueue();
                     return true;
-                } else if (url != null && url.startsWith(YLBSdkConstants.SMKPAY_SCHEME_HEADER)) {//调起市民卡支付
-                    String order = url.replace(YLBSdkConstants.SMKPAY_SCHEME_HEADER, "");
-                    order = new String(Base64.decode(order, Base64.DEFAULT));
-                    Gson gson = new Gson();
-                    H5ToYLBSdkMsg<SmkOrder> h5ToNative = gson.fromJson(order, H5ToYLBSdkMsg.class);
-                    mOrderString = gson.toJson(h5ToNative.getParams());
-                    jsCallback = h5ToNative.getCallback();
-                    if (TextUtils.isEmpty(jsCallback)) jsCallback = "sendResultToWap";
-                    if (YLCommonUtils.checkHasInstallApp(mContext, "com.smk")) {
-                        YLJumpUtils.jumpToSmkPay((Activity) mContext, mOrderString);
-                    } else {
-                        view.loadUrl(YLBSdkManager.isDebugMode() ? YLBSdkConstants.SMKPAY_URL_DEBUG : YLBSdkConstants.SMKPAY_URL_RELEASE);
-                    }
-                } else if (url != null && url.startsWith("smkapp://getcardmsg")) { // 获取预付卡充值信息
-                    sendCardNumberToHtml(((YLBWebViewActivity) mContext).getsInitParams());
                 } else if (url != null && url.startsWith(YLBSdkConstants.YLBSDK_PAY_SCHEME_HEADER)){ //调起app内部支付
                     String params = url.replace(YLBSdkConstants.YLBSDK_PAY_SCHEME_HEADER, "");
                     params = new String(Base64.decode(params, Base64.DEFAULT));
@@ -657,12 +642,6 @@ public class YLBWebView extends WebView implements WebViewJavascriptBridge {
         byte b[] = result.getBytes();
         YLLogUtils.i("WebView", "web_result base 64:" + android.util.Base64.encodeToString(b, android.util.Base64.DEFAULT));
         loadUrl("javascript:"+ jsCallback + "(\'" + android.util.Base64.encodeToString(b, android.util.Base64.DEFAULT) + "\')");
-    }
-
-    public void sendCardNumberToHtml(String result) {
-        byte b[] = result.getBytes();
-        YLLogUtils.i("WebView", "web_result base 64:" + android.util.Base64.encodeToString(b, android.util.Base64.DEFAULT));
-        loadUrl("javascript:sendCardMsgToWap(\'" + android.util.Base64.encodeToString(b, android.util.Base64.DEFAULT) + "\')");
     }
 
     private YLDialogUtils.DialogButtonClickListener dialogListener = new YLDialogUtils.DialogButtonClickListener() {
